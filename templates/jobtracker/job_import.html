@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Import Jobs from CSV{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Import Jobs from CSV</h2>
+
+{% if imported is not None %}
+  <div class="alert alert-success">Successfully imported {{ imported }} job{{ imported|pluralize }}.</div>
+{% endif %}
+
+{% if errors %}
+  <div class="alert alert-warning">
+    <strong>Some rows were skipped:</strong>
+    <ul class="mb-0 mt-1">
+      {% for err in errors %}<li>{{ err }}</li>{% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+{% if error %}
+  <div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="csv_file" class="form-label fw-semibold">CSV File</label>
+        <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Import</button>
+      <a class="btn btn-secondary ms-2" href="{% url 'job_list' %}">Cancel</a>
+    </form>
+  </div>
+</div>
+
+<div class="card text-muted">
+  <div class="card-body">
+    <h6 class="card-title">Expected CSV columns</h6>
+    <p class="mb-1"><code>company</code>, <code>title</code> — required</p>
+    <p class="mb-1"><code>status</code> — one of: <code>exploring</code>, <code>resume_submitted</code> (default), <code>interview_scheduled</code>, <code>offer_accepted</code>, <code>offer_declined</code>, <code>rejected</code></p>
+    <p class="mb-1"><code>work_type</code> — one of: <code>on_site</code>, <code>hybrid</code>, <code>remote</code></p>
+    <p class="mb-1"><code>source</code> — one of: <code>linkedin</code>, <code>indeed</code>, <code>company_website</code>, <code>referral</code>, <code>recruiter</code>, <code>other</code></p>
+    <p class="mb-1"><code>url</code>, <code>application_status_url</code>, <code>date_applied</code> (YYYY-MM-DD), <code>office_location</code>, <code>key_contacts</code>, <code>notes</code> — optional</p>
+  </div>
+</div>
+{% endblock %}

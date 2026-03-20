@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Job Applications{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">Job Applications</h2>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'job_import_csv' %}">Import CSV</a>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'job_export_csv' %}">Export CSV</a>
+  </div>
+</div>
+
+{% if jobs %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Company</th>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Work Type</th>
+        <th>Source</th>
+        <th>Date Applied</th>
+        <th>Location</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for job in jobs %}
+      <tr>
+        <td>
+          {% if job.url %}
+            <a href="{{ job.url }}" target="_blank" rel="noopener">{{ job.company }}</a>
+          {% else %}
+            {{ job.company }}
+          {% endif %}
+        </td>
+        <td>{{ job.title }}</td>
+        <td>
+          {% if job.status == 'exploring' %}
+            <span class="badge bg-info text-dark">Exploring</span>
+          {% elif job.status == 'resume_submitted' %}
+            <span class="badge bg-secondary">Resume Submitted</span>
+          {% elif job.status == 'interview_scheduled' %}
+            <span class="badge bg-primary">Interview Scheduled</span>
+          {% elif job.status == 'offer_accepted' %}
+            <span class="badge bg-success">Offer Accepted</span>
+          {% elif job.status == 'offer_declined' %}
+            <span class="badge bg-warning text-dark">Offer Declined</span>
+          {% elif job.status == 'rejected' %}
+            <span class="badge bg-danger">Rejected</span>
+          {% endif %}
+        </td>
+        <td>{{ job.get_work_type_display|default:"—" }}</td>
+        <td>{{ job.get_source_display|default:"—" }}</td>
+        <td>{{ job.date_applied|default:"—" }}</td>
+        <td>{{ job.office_location|default:"—" }}</td>
+        <td>
+          {% if job.application_status_url %}
+            <a class="btn btn-outline-info btn-sm" href="{{ job.application_status_url }}" target="_blank" rel="noopener">Track</a>
+          {% endif %}
+          <a class="btn btn-outline-primary btn-sm" href="{% url 'job_update' job.pk %}">Edit</a>
+          <a class="btn btn-outline-danger btn-sm" href="{% url 'job_delete' job.pk %}">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <p class="fs-5">No job applications yet.</p>
+  <a class="btn btn-success" href="{% url 'job_create' %}">Add your first job</a>
+</div>
+{% endif %}
+{% endblock %}
