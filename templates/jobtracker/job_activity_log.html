@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Activity Log — {{ job }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="mb-0">Activity Log</h2>
+    <p class="text-muted mb-0">{{ job.company }} — {{ job.title }}</p>
+  </div>
+  <a class="btn btn-outline-secondary btn-sm" href="{% url 'job_list' %}">Back to Jobs</a>
+</div>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-header fw-semibold">Add Activity</div>
+  <div class="card-body">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="row g-3 align-items-start">
+        <div class="col-md-3">
+          <label for="{{ form.date.id_for_label }}" class="form-label fw-semibold">Date</label>
+          {{ form.date }}
+          {% if form.date.errors %}
+            <div class="text-danger small">{{ form.date.errors }}</div>
+          {% endif %}
+        </div>
+        <div class="col-md-7">
+          <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">Description</label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <div class="text-danger small">{{ form.description.errors }}</div>
+          {% endif %}
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Add</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if activities %}
+<div class="list-group">
+  {% for activity in activities %}
+  <div class="list-group-item">
+    <div class="d-flex justify-content-between">
+      <span class="fw-semibold">{{ activity.date }}</span>
+    </div>
+    <p class="mb-0 mt-1" style="white-space: pre-wrap;">{{ activity.description }}</p>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">No activities logged yet.</p>
+{% endif %}
+{% endblock %}

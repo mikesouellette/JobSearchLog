@@ -1,11 +1,11 @@
 import csv
 import io
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from .models import Job
-from .forms import JobForm
+from .models import Job, Activity
+from .forms import JobForm, ActivityForm
 
 CSV_FIELDS = ['company', 'title', 'status', 'work_type', 'source', 'url',
               'application_status_url', 'date_applied', 'office_location',
@@ -37,6 +37,24 @@ class JobDeleteView(DeleteView):
     model = Job
     template_name = 'jobtracker/job_confirm_delete.html'
     success_url = reverse_lazy('job_list')
+
+
+def job_activity_log(request, pk):
+    job = get_object_or_404(Job, pk=pk)
+    if request.method == 'POST':
+        form = ActivityForm(request.POST)
+        if form.is_valid():
+            activity = form.save(commit=False)
+            activity.job = job
+            activity.save()
+            return redirect('job_activity_log', pk=pk)
+    else:
+        form = ActivityForm()
+    return render(request, 'jobtracker/job_activity_log.html', {
+        'job': job,
+        'activities': job.activities.all(),
+        'form': form,
+    })
 
 
 def job_export_csv(request):

@@ -60,6 +60,7 @@
           {% if job.application_status_url %}
             <a class="btn btn-outline-info btn-sm" href="{{ job.application_status_url }}" target="_blank" rel="noopener">Track</a>
           {% endif %}
+          <a class="btn btn-outline-secondary btn-sm" href="{% url 'job_activity_log' job.pk %}">Activity</a>
           <a class="btn btn-outline-primary btn-sm" href="{% url 'job_update' job.pk %}">Edit</a>
           <a class="btn btn-outline-danger btn-sm" href="{% url 'job_delete' job.pk %}">Delete</a>
         </td>

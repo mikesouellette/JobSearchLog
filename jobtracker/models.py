@@ -39,3 +39,15 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.company} — {self.title}"
+
+
+class Activity(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='activities')
+    date = models.DateField()
+    description = models.TextField()
+
+    class Meta:
+        ordering = ['-date', '-id']
+
+    def __str__(self):
+        return f"{self.date}: {self.description[:50]}"
