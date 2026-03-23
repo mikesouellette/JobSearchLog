@@ -1,5 +1,5 @@
 from django import forms
-from .models import Job
+from .models import Job, Activity
 
 
 class JobForm(forms.ModelForm):
@@ -22,4 +22,14 @@ class JobForm(forms.ModelForm):
             'application_status_url': forms.URLInput(attrs={'class': 'form-control'}),
             'key_contacts': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'notes': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+        }
+
+
+class ActivityForm(forms.ModelForm):
+    class Meta:
+        model = Activity
+        fields = ['date', 'description']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
         }
