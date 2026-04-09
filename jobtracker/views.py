@@ -16,7 +16,17 @@ class JobListView(ListView):
     model = Job
     template_name = 'jobtracker/job_list.html'
     context_object_name = 'jobs'
-    ordering = ['-created_at']
+
+    def get_queryset(self):
+        qs = Job.objects.order_by('-created_at')
+        if self.request.GET.get('show_all') != '1':
+            qs = qs.exclude(status__in=['rejected', 'offer_declined'])
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['show_all'] = self.request.GET.get('show_all') == '1'
+        return context
 
 
 class JobCreateView(CreateView):

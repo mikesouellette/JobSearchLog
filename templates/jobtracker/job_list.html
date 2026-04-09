@@ -5,7 +5,12 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h2 class="mb-0">Job Applications</h2>
-  <div class="d-flex gap-2">
+  <div class="d-flex gap-2 align-items-center">
+    {% if show_all %}
+      <a class="btn btn-warning btn-sm" href="{% url 'job_list' %}">Hide Unavailable</a>
+    {% else %}
+      <a class="btn btn-outline-secondary btn-sm" href="{% url 'job_list' %}?show_all=1">Show Unavailable</a>
+    {% endif %}
     <a class="btn btn-outline-secondary btn-sm" href="{% url 'job_import_csv' %}">Import CSV</a>
     <a class="btn btn-outline-secondary btn-sm" href="{% url 'job_export_csv' %}">Export CSV</a>
   </div>
