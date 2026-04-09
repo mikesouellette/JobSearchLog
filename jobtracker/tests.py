@@ -129,7 +129,6 @@ class ActivityLogTest(TestCase):
         activities = list(self.job.activities.all())
         self.assertEqual(activities[0].description, 'Later entry')
 
-
 class ApiCreateJobTest(TestCase):
     CREATE_URL = '/api/jobs/'
 
