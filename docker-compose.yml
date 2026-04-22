@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - sqlite_data:/app/db.sqlite3
+    environment:
+      DJANGO_SECRET_KEY: "django-insecure-=o9s=287pgsdx+lb!6)#j4*07*z4q&gy*i*fu%+8pm%eq-nqkw"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+
+volumes:
+  sqlite_data:
