@@ -1,5 +1,9 @@
 import csv
 import io
+import json
+from collections import defaultdict
+from datetime import date, timedelta
+from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -64,6 +68,62 @@ def job_activity_log(request, pk):
         'job': job,
         'activities': job.activities.all(),
         'form': form,
+    })
+
+
+def analytics(request):
+    status_display = dict(Job.STATUS_CHOICES)
+    status_colors = {
+        'exploring': '#0d6efd',
+        'resume_submitted': '#fd7e14',
+        'interview_scheduled': '#ffc107',
+        'offer_accepted': '#198754',
+        'offer_declined': '#6c757d',
+        'rejected': '#dc3545',
+    }
+
+    status_counts = (
+        Job.objects.values('status')
+        .annotate(count=Count('id'))
+        .order_by('status')
+    )
+    status_labels = []
+    status_data = []
+    status_bg_colors = []
+    for item in status_counts:
+        status_labels.append(status_display.get(item['status'], item['status']))
+        status_data.append(item['count'])
+        status_bg_colors.append(status_colors.get(item['status'], '#adb5bd'))
+
+    weeks_back = 12
+    today = date.today()
+    start_date = today - timedelta(weeks=weeks_back)
+    start_date = start_date - timedelta(days=start_date.weekday())
+
+    applied_dates = Job.objects.filter(
+        date_applied__gte=start_date
+    ).values_list('date_applied', flat=True)
+
+    weekly_counts = defaultdict(int)
+    for d in applied_dates:
+        if d:
+            week_start = d - timedelta(days=d.weekday())
+            weekly_counts[week_start] += 1
+
+    week_labels = []
+    week_data = []
+    for i in range(weeks_back):
+        week_start = start_date + timedelta(weeks=i)
+        week_labels.append(week_start.strftime('%b %-d'))
+        week_data.append(weekly_counts.get(week_start, 0))
+
+    return render(request, 'jobtracker/analytics.html', {
+        'status_labels': json.dumps(status_labels),
+        'status_data': json.dumps(status_data),
+        'status_bg_colors': json.dumps(status_bg_colors),
+        'week_labels': json.dumps(week_labels),
+        'week_data': json.dumps(week_data),
+        'total_jobs': Job.objects.count(),
     })
 
 

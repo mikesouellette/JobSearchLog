@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics — Job Tracker{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">Analytics</h2>
+  <span class="text-muted">{{ total_jobs }} total application{{ total_jobs|pluralize }}</span>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card shadow-sm h-100">
+      <div class="card-header fw-semibold">Applications by Status</div>
+      <div class="card-body d-flex align-items-center justify-content-center">
+        <div style="position: relative; width: 100%; max-width: 340px;">
+          <canvas id="statusPieChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card shadow-sm h-100">
+      <div class="card-header fw-semibold">New Applications by Week
+        <small class="text-muted fw-normal">(last 12 weeks, by date applied)</small>
+      </div>
+      <div class="card-body d-flex align-items-center">
+        <canvas id="weeklyBarChart" style="width: 100%;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+  const statusLabels = {{ status_labels|safe }};
+  const statusData = {{ status_data|safe }};
+  const statusColors = {{ status_bg_colors|safe }};
+  const weekLabels = {{ week_labels|safe }};
+  const weekData = {{ week_data|safe }};
+
+  new Chart(document.getElementById('statusPieChart'), {
+    type: 'pie',
+    data: {
+      labels: statusLabels,
+      datasets: [{
+        data: statusData,
+        backgroundColor: statusColors,
+        borderWidth: 1,
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('weeklyBarChart'), {
+    type: 'bar',
+    data: {
+      labels: weekLabels,
+      datasets: [{
+        label: 'Applications',
+        data: weekData,
+        backgroundColor: '#0d6efd',
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1, precision: 0 }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+</script>
+{% endblock %}
