@@ -10,7 +10,10 @@
   <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container">
       <a class="navbar-brand fw-bold" href="{% url 'job_list' %}">Job Tracker</a>
-      <a class="btn btn-success btn-sm" href="{% url 'job_create' %}">+ Add Job</a>
+      <div class="d-flex gap-2 align-items-center">
+        <a class="btn btn-outline-light btn-sm" href="{% url 'analytics' %}">Analytics</a>
+        <a class="btn btn-success btn-sm" href="{% url 'job_create' %}">+ Add Job</a>
+      </div>
     </div>
   </nav>
 
